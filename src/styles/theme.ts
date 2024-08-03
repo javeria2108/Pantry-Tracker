@@ -29,7 +29,8 @@ export const themeOptions: ThemeOptions = {
       typography: {
         fontFamily: 'Arial, sans-serif',
         h1: {
-          fontWeight: 700,
+          fontWeight: 300,
+          fontSize: '4rem'
         },
         button: {
           textTransform: 'none',
