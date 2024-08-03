@@ -5,12 +5,14 @@ import useFetchItems from '@/hooks/useFetchItems';
 import { itemType } from '@/types';
 import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
-import { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import AddItemModal from '@/components/AddItemModal';
+import SearchComponent from '@/components/Search';
 
 const Home: React.FC = () => {
   const { itemsList, loading, error, setItemsList } = useFetchItems();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleAddNewItem = () => {
     setIsModalOpen(true);
@@ -56,6 +58,17 @@ const Home: React.FC = () => {
     }
   };
 
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value.toLowerCase());
+  };
+
+  const handleSearchClick = () => {
+    const filteredItems = itemsList.filter((item: itemType) =>
+      item.name.toLowerCase().includes(searchQuery)
+    );
+    setItemsList(filteredItems);
+  };
+
   return (
     <Container 
       sx={{
@@ -72,11 +85,17 @@ const Home: React.FC = () => {
       </Typography>
       <Button 
         variant='contained' 
-        sx={{ bgcolor: 'success.main', color: 'white', '&:hover': { bgcolor: 'success.dark' } }} 
+        sx={{ bgcolor: 'success.main', color: 'white', '&:hover': { bgcolor: 'success.dark' }, m: 3 }} 
         onClick={handleAddNewItem}
       >
         Add New Item
       </Button>
+
+      <SearchComponent 
+        searchQuery={searchQuery} 
+        onSearchChange={handleSearchChange} 
+        onSearchClick={handleSearchClick}
+      />
       <Grid 
         container 
         spacing={2} 
