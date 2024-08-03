@@ -1,9 +1,14 @@
-import Image from "next/image";
-import styles from "./page.module.css";
-import { Container, Typography, Box } from "@mui/material";
-import ItemCard from "@/components/ItemCard";
+'use client';
+import { Container, Typography, Grid } from '@mui/material';
+import ItemCard from '@/components/ItemCard';
+import useFetchItems from '@/hooks/useFetchItems';
+import { itemType } from '@/types';
 
-export default function Home() {
+const Home: React.FC = () => {
+  const { itemsList, loading, error } = useFetchItems();
+
+ 
+
   return (
     <Container 
       sx={{
@@ -18,11 +23,26 @@ export default function Home() {
       <Typography variant="h1" sx={{color: 'primary.main', mb: 4}}>
         Pantry Tracker
       </Typography>
-      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 2 }}>
-        <ItemCard name="Apples" details="5 in stock" />
-        <ItemCard name="Milk" details="2 cartons" />
-        <ItemCard name="Bread" details="1 loaf" />
-      </Box>
+      <Grid 
+        container 
+        spacing={2} 
+        sx={{ 
+          width: '100%', 
+          justifyContent: 'center',
+        }}
+      >
+        {itemsList && itemsList.length > 0 ? (
+          itemsList.map((item: itemType, index: number) => (
+            <Grid item xs={12} sm={4} key={index}>
+              <ItemCard name={item.name} details={item.quantity} />
+            </Grid>
+          ))
+        ) : (
+          <Typography>Loading...</Typography>
+        )}
+      </Grid>
     </Container>
   );
 }
+
+export default Home;

@@ -1,20 +1,20 @@
 import { Button, ButtonProps } from '@mui/material';
-
-interface CustomButtonProps {
-  variant?: 'add' | 'use';
-}
-
 import { ReactNode } from 'react';
 
-const CustomButton: React.FC<CustomButtonProps> = ({ variant = 'add', children, ...props }: CustomButtonProps & { children?: ReactNode }) => {
+interface CustomButtonProps extends ButtonProps {
+  text?: 'add' | 'use';
+}
+
+const CustomButton: React.FC<CustomButtonProps> = ({  text= 'add',onClick, children, ...props }: CustomButtonProps & { children?: ReactNode }) => {
   return (
     <Button
       variant="contained"
+      onClick={onClick}
       sx={{
-        backgroundColor: variant === 'add' ? 'success.main' : 'info.main',
+        backgroundColor: text === 'add' ? 'success.main' : 'info.main',
         color: 'white',
         '&:hover': {
-          backgroundColor: variant === 'add' ? 'success.dark' : 'info.dark',
+          backgroundColor: text=== 'add' ? 'success.dark' : 'info.dark',
         },
         textTransform: 'none',
         fontWeight: 'bold',

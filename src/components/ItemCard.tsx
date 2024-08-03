@@ -1,5 +1,10 @@
 import { Box, Card, CardContent, Typography } from '@mui/material';
 import CustomButton from './CustomButton';
+import { useState } from 'react'; // Import useState from react
+import AddItemModal from './AddItemModal';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { db } from '../../firebase-config';
+import { revalidatePath } from 'next/cache';
 
 interface ItemCardProps {
   name: string;
@@ -7,6 +12,25 @@ interface ItemCardProps {
 }
 
 const ItemCard: React.FC<ItemCardProps> = ({ name, details }: ItemCardProps) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const handleAddClick = () => {
+        setIsModalOpen(true);
+    }
+    const handleUseClick=()=>{
+        console.log()
+    }
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+      };
+    
+      const  handleSave = async (itemName: string, itemQuantity: number) => {
+        await addDoc(collection(db, "pantry-tracker"), {
+            name: itemName,
+            quantity: itemQuantity
+          });
+        revalidatePath('/')  
+      };
   return (
     <Box sx={{ width: '300px', my: 2 }}>
       <Card 
@@ -41,12 +65,14 @@ const ItemCard: React.FC<ItemCardProps> = ({ name, details }: ItemCardProps) => 
             </Typography>
           )}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-            <CustomButton variant="add">Add</CustomButton>
-            <CustomButton variant="use">Use</CustomButton>
+            <CustomButton text="add" onClick={handleAddClick}>Add</CustomButton>
+            <CustomButton text="use" onClick={handleUseClick}>Use</CustomButton>
           </Box>
         </CardContent>
       </Card>
+      <AddItemModal open={isModalOpen} handleClose={handleModalClose} handleSave={handleSave} />
     </Box>
+    
   )
 }
 
