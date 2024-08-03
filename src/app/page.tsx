@@ -1,13 +1,60 @@
 'use client';
-import { Container, Typography, Grid } from '@mui/material';
+import { Container, Typography, Grid, Button } from '@mui/material';
 import ItemCard from '@/components/ItemCard';
 import useFetchItems from '@/hooks/useFetchItems';
 import { itemType } from '@/types';
+import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../firebase-config';
+import { useState } from 'react';
+import AddItemModal from '@/components/AddItemModal';
 
 const Home: React.FC = () => {
-  const { itemsList, loading, error } = useFetchItems();
+  const { itemsList, loading, error, setItemsList } = useFetchItems();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
- 
+  const handleAddNewItem = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSave = async (itemName: string, itemQuantity: number) => {
+    const newItem = { name: itemName, quantity: itemQuantity };
+    const docRef = await addDoc(collection(db, "pantry-tracker"), newItem);
+    setItemsList((prevItems: itemType[]) => [...prevItems, { ...newItem, id: docRef.id }]);
+    setIsModalOpen(false);
+  };
+
+  const handleAddItem = async (id: string, currentQuantity: number) => {
+    console.log('ID:', id); // Add this line
+  console.log('Current Quantity:', currentQuantity); // Add this line
+    const updatedQuantity = currentQuantity + 1;
+    await updateDoc(doc(db, "pantry-tracker", id), { quantity: updatedQuantity });
+    setItemsList((prevItems: itemType[]) =>
+      prevItems.map(item =>
+        item.id === id ? { ...item, quantity: updatedQuantity } : item
+      )
+    );
+  };
+
+  const handleDeleteItem = async (id: string, currentQuantity: number) => {
+    if (currentQuantity > 1) {
+      const updatedQuantity = currentQuantity - 1;
+      await updateDoc(doc(db, "pantry-tracker", id), { quantity: updatedQuantity });
+      setItemsList((prevItems: itemType[]) =>
+        prevItems.map(item =>
+          item.id === id ? { ...item, quantity: updatedQuantity } : item
+        )
+      );
+    } else {
+      await deleteDoc(doc(db, "pantry-tracker", id));
+      setItemsList((prevItems: itemType[]) =>
+        prevItems.filter(item => item.id !== id)
+      );
+    }
+  };
 
   return (
     <Container 
@@ -20,27 +67,39 @@ const Home: React.FC = () => {
         textAlign: 'center',
       }}
     >
-      <Typography variant="h1" sx={{color: 'primary.main', mb: 4}}>
+      <Typography variant="h1" sx={{ color: 'primary.main', mb: 4 }}>
         Pantry Tracker
       </Typography>
+      <Button 
+        variant='contained' 
+        sx={{ bgcolor: 'success.main', color: 'white', '&:hover': { bgcolor: 'success.dark' } }} 
+        onClick={handleAddNewItem}
+      >
+        Add New Item
+      </Button>
       <Grid 
         container 
         spacing={2} 
-        sx={{ 
-          width: '100%', 
-          justifyContent: 'center',
-        }}
+        sx={{ width: '100%', justifyContent: 'center' }}
       >
-        {itemsList && itemsList.length > 0 ? (
-          itemsList.map((item: itemType, index: number) => (
-            <Grid item xs={12} sm={4} key={index}>
-              <ItemCard name={item.name} details={item.quantity} />
+        {loading ? (
+          <Typography>Loading...</Typography>
+        ) : error ? (
+          <Typography>Error: {error.message}</Typography>
+        ) : (
+          itemsList.map((item: itemType) => (
+            <Grid item xs={12} sm={4} key={item.id}>
+              <ItemCard 
+                name={item.name} 
+                details={item.quantity} 
+                handleAddClick={() => handleAddItem(item.id!, item.quantity)}
+                handleDeleteClick={() => handleDeleteItem(item.id!, item.quantity)}
+              />
             </Grid>
           ))
-        ) : (
-          <Typography>Loading...</Typography>
         )}
       </Grid>
+      <AddItemModal open={isModalOpen} handleClose={handleModalClose} handleSave={handleSave} />
     </Container>
   );
 }

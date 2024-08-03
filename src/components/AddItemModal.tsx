@@ -9,13 +9,15 @@ interface AddItemModalProps {
 
 const AddItemModal: React.FC<AddItemModalProps> = ({ open, handleClose, handleSave }: AddItemModalProps) => {
   const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState<number | ''>(0);
 
   const handleSubmit = () => {
-    handleSave(name, quantity);
-    setName('');
-    setQuantity('');
-    handleClose();
+    if (name && quantity !== '') {
+      handleSave(name, quantity as number);
+      setName('');
+      setQuantity(0);
+      handleClose();
+    }
   };
 
   return (
@@ -34,10 +36,10 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, handleClose, handleSa
         <TextField
           margin="dense"
           label="Quantity"
-          type="text"
+          type="number"
           fullWidth
           value={quantity}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuantity(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuantity(Number(e.target.value))}
         />
       </DialogContent>
       <DialogActions>
