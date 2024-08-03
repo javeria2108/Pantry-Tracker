@@ -90,8 +90,9 @@ const Home: React.FC = () => {
           itemsList.map((item: itemType) => (
             <Grid item xs={12} sm={4} key={item.id}>
               <ItemCard 
+                id={item.id}
                 name={item.name} 
-                details={item.quantity} 
+                quantity={item.quantity} 
                 handleAddClick={() => handleAddItem(item.id!, item.quantity)}
                 handleDeleteClick={() => handleDeleteItem(item.id!, item.quantity)}
               />

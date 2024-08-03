@@ -2,13 +2,14 @@ import { Box, Card, CardContent, Typography } from '@mui/material';
 import CustomButton from './CustomButton';
 
 interface ItemCardProps {
+    id: string;  
   name: string;
-  details?: string;
-  handleAddClick: () => void;
-  handleDeleteClick: () => void;
+  quantity:number
+  handleAddClick: (id: string, currentQuantity: number) => void;
+  handleDeleteClick: (id: string, currentQuantity: number) => void;
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({ name, details, handleAddClick, handleDeleteClick }: ItemCardProps) => {
+const ItemCard: React.FC<ItemCardProps> = ({id, name, quantity, handleAddClick, handleDeleteClick }: ItemCardProps) => {
   return (
     <Box sx={{ width: '300px', my: 2 }}>
       <Card
@@ -31,7 +32,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ name, details, handleAddClick, hand
           >
             {name}
           </Typography>
-          {details && (
+          {quantity && (
             <Typography
               variant="body2"
               sx={{
@@ -39,12 +40,12 @@ const ItemCard: React.FC<ItemCardProps> = ({ name, details, handleAddClick, hand
                 mt: 1,
               }}
             >
-              {details}
+              {`Quantity:${quantity}`}
             </Typography>
           )}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-            <CustomButton text="add" onClick={handleAddClick}>Add</CustomButton>
-            <CustomButton text="use" onClick={handleDeleteClick}>Use</CustomButton>
+          <CustomButton text="add" onClick={() => handleAddClick(id, quantity)}>Add</CustomButton>
+          <CustomButton text="use" onClick={() => handleDeleteClick(id,quantity)}>Use</CustomButton>
           </Box>
         </CardContent>
       </Card>

@@ -13,8 +13,12 @@ const useFetchItems = () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'pantry-tracker'));
         console.log("query snapshot:",querySnapshot);
-        const items: itemType[] = querySnapshot.docs.map(doc => doc.data() as itemType);
+        const items: itemType[] = querySnapshot.docs.map(doc => ({
+            id: doc.id,  // Add this line
+            ...doc.data() as itemType
+          }));
         console.log(items)
+        items.map(item=>console.log(item.id))
         setItemsList(items);
       } catch (err) {
         setError(err as Error);
