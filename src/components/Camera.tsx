@@ -7,7 +7,7 @@ interface CameraComponentProps {
   onClose: () => void;
 }
 
-const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture, onClose }) => {
+const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture, onClose }: CameraComponentProps) => {
   const camera = useRef<any>(null);
 
   const handleCapture = () => {
@@ -18,7 +18,7 @@ const CameraComponent: React.FC<CameraComponentProps> = ({ onCapture, onClose })
   return (
     <div style={{ textAlign: 'center' }}>
       <div style={{ width: '100%', height: '400px' }}>
-        <Camera ref={camera} aspectRatio={16 / 9} />
+        <Camera ref={camera} aspectRatio={16 / 9}   errorMessages={{}} />
       </div>
       <Button variant="contained" onClick={handleCapture} style={{ marginTop: '10px' }}>Capture</Button>
       <Button variant="contained" onClick={onClose} style={{ marginTop: '10px', marginLeft: '10px' }}>Close</Button>
