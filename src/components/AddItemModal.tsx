@@ -29,7 +29,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, handleClose, handleSa
     const fetchItemName = async () => {
       if (imageUrl) {
         const itemName = await getItemNameFromImage(imageUrl);
-        setName(itemName);
+        setName(itemName || '');
       }
     };
     fetchItemName();

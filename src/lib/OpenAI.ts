@@ -1,8 +1,6 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
-
 import { OpenAI } from 'openai';
-const openAI = new OpenAI();
+
+const openAI = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,dangerouslyAllowBrowser: true });
 
 export const getItemNameFromImage = async (imageUrl: string) => {
   try {
@@ -28,8 +26,8 @@ export const getItemNameFromImage = async (imageUrl: string) => {
       ],
     });
     console.log('Response:', response);
-    const itemName = response.choices[0];
-    return itemName || '';
+    const itemName = response.choices[0].message.content;
+    return itemName || 'unknown';
   } catch (error) {
     console.error('Error fetching item name:', error);
     return '';
