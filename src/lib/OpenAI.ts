@@ -27,6 +27,7 @@ export const getItemNameFromImage = async (imageUrl: string) => {
         },
       ],
     });
+    console.log('Response:', response);
     const itemName = response.choices[0];
     return itemName || '';
   } catch (error) {
