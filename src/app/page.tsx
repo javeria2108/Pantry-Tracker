@@ -1,18 +1,21 @@
 'use client'
-import { Container, Typography, Grid, Button } from '@mui/material';
+import React, { useState, ChangeEvent } from 'react';
 import ItemCard from '@/components/ItemCard';
 import useFetchItems from '@/hooks/useFetchItems';
 import { itemType } from '@/types';
 import { addDoc, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebase-config';
-import { useState, ChangeEvent } from 'react';
 import AddItemModal from '@/components/AddItemModal';
 import SearchComponent from '@/components/Search';
+import { getRecipeRecommendations } from '@/lib/api'
+import { Container, Typography, Grid, Button, Paper, Box, Divider } from '@mui/material';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
 
 const Home: React.FC = () => {
   const { itemsList, loading, error, setItemsList } = useFetchItems();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [recipes, setRecipes] = useState('');
 
   const handleAddNewItem = () => {
     setIsModalOpen(true);
@@ -67,6 +70,16 @@ const Home: React.FC = () => {
     setItemsList(filteredItems);
   };
 
+  const handleGetRecipes = async () => {
+    const itemNames = itemsList.map(item => item.name);
+    try {
+      const recipeRecommendations = await getRecipeRecommendations(itemNames);
+      setRecipes(recipeRecommendations);
+    } catch (error) {
+      console.error('Failed to get recipe recommendations', error);
+    }
+  };
+
   return (
     <Container 
       sx={{
@@ -94,6 +107,51 @@ const Home: React.FC = () => {
         onSearchChange={handleSearchChange} 
         onSearchClick={handleSearchClick}
       />
+      <Button 
+        variant='contained' 
+        startIcon={<RestaurantIcon />}
+        sx={{ 
+          bgcolor: 'primary.main', 
+          color: 'white', 
+          '&:hover': { bgcolor: 'primary.dark' }, 
+          my: 3 
+        }} 
+        onClick={handleGetRecipes}
+      >
+        Get Recipes
+      </Button>
+
+      {recipes && (
+        <Paper elevation={3} sx={{ p: 3, mt: 4, bgcolor: 'background.paper' }}>
+          <Typography variant="h4" sx={{ color: 'primary.main', mb: 2 }}>
+            Recommended Recipes
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Box sx={{ whiteSpace: 'pre-wrap' }}>
+            <Typography variant="body1" component="div">
+              {recipes.split('\n').map((line, index) => (
+                <React.Fragment key={index}>
+                  {line.startsWith('**') ? (
+                    <Typography variant="h6" sx={{ mt: 2, mb: 1, fontWeight: 'bold' }}>
+                      {line.replace(/\*\*/g, '')}
+                    </Typography>
+                  ) : line.startsWith('Ingredients:') ? (
+                    <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 'bold' }}>
+                      {line}
+                    </Typography>
+                  ) : line.startsWith('Instructions:') ? (
+                    <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 'bold' }}>
+                      {line}
+                    </Typography>
+                  ) : (
+                    <Typography paragraph>{line}</Typography>
+                  )}
+                </React.Fragment>
+              ))}
+            </Typography>
+          </Box>
+        </Paper>
+      )}
       <Grid 
         container 
         spacing={2} 

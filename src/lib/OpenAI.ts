@@ -5,7 +5,7 @@ const openAI = new OpenAI({ apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,dange
 export const getItemNameFromImage = async (imageUrl: string) => {
   try {
     const response = await openAI.chat.completions.create({
-      model: 'gpt-4-vision-preview',
+      model: 'gpt-4o-mini',
       messages: [
         {
           role: 'user',

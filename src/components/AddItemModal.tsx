@@ -3,7 +3,7 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField } 
 import CameraComponent from './Camera';
 import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import { storage } from '../../firebase-config';
-import { getItemNameFromImage } from '@/lib/OpenAI'
+
 interface AddItemModalProps {
   open: boolean;
   handleClose: () => void;
@@ -15,7 +15,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, handleClose, handleSa
   const [quantity, setQuantity] = useState<number>(0);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [imageUrl, setImageUrl] = useState<string>('');
+ 
 
   useEffect(() => {
     if (!open) {
@@ -25,15 +25,6 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, handleClose, handleSa
     }
   }, [open]);
 
-  useEffect(() => {
-    const fetchItemName = async () => {
-      if (imageUrl) {
-        const itemName = await getItemNameFromImage(imageUrl);
-        setName(itemName || '');
-      }
-    };
-    fetchItemName();
-  }, [imageUrl]);
 
 
   const handleSubmit = async () => {
@@ -52,6 +43,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, handleClose, handleSa
   const handleCapture = (image: string) => {
     setCapturedImage(image);
     setIsCameraOpen(false);
+    
   };
 
   return (
