@@ -12,7 +12,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({ open, handleClose, handleSa
   const [quantity, setQuantity] = useState<number>(0);
 
   const handleSubmit = () => {
-    if (name && quantity !== '') {
+    if (name !== '') {
       handleSave(name, quantity as number);
       setName('');
       setQuantity(0);
