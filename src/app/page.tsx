@@ -1,4 +1,4 @@
-'use client';
+'use client'
 import { Container, Typography, Grid, Button } from '@mui/material';
 import ItemCard from '@/components/ItemCard';
 import useFetchItems from '@/hooks/useFetchItems';
@@ -22,16 +22,14 @@ const Home: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleSave = async (itemName: string, itemQuantity: number) => {
-    const newItem = { name: itemName, quantity: itemQuantity };
+  const handleSave = async (itemName: string, itemQuantity: number, imageUrl: string) => {
+    const newItem = { name: itemName, quantity: itemQuantity, imageUrl };
     const docRef = await addDoc(collection(db, "pantry-tracker"), newItem);
     setItemsList((prevItems: itemType[]) => [...prevItems, { ...newItem, id: docRef.id }]);
     setIsModalOpen(false);
   };
 
   const handleAddItem = async (id: string, currentQuantity: number) => {
-    console.log('ID:', id); // Add this line
-  console.log('Current Quantity:', currentQuantity); // Add this line
     const updatedQuantity = currentQuantity + 1;
     await updateDoc(doc(db, "pantry-tracker", id), { quantity: updatedQuantity });
     setItemsList((prevItems: itemType[]) =>
